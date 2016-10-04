@@ -4,19 +4,21 @@ Personally not many of my functions take 1 parameter. I wish my code was pure en
 
 What I want to write are promises which take multiple arguments and evaluate in series. 
 
+For example, let's say I have a file system and for each operation I need to pass the user making the request (to filter by what they are authorized to see). To init my file browser I want to get a users home folder then get a that folders list of files.
+
 This is what I want:
 ```javascript
-getHomeFolderForUser(user).then(function (folder) {
-     return getFilesInFolderForUser(user, folder);
+homeFolderForUser(user).then(function (folder) {
+     return filesInFolder(user, folder);
 }).then(function (wantFiles, wantInFolder)){
      //...
 })
 ```
 
-Currently the only way to get it is to do this:
+Currently the way to get it is to do this:
 ```javascript
-getHomeFolderForUser(user).then(function (folder) {
-     return [folder, getFilesInFolderForUser(user, folder)];
+homeFolderForUser(user).then(function (folder) {
+     return [folder, filesInFolder(user, folder)];
 }).spread(function (gotFolder, gotFiles)){
      //...
 })
@@ -25,8 +27,8 @@ getHomeFolderForUser(user).then(function (folder) {
 But I think this is ugly and want a prettier way. Introducing .with which creates an array from whatever you resolve with and appends all values you include with. And the sleeker looking thenWith which is really just a wrapper for spread. 
 
 ```javascript
-getHomeFolderForUser(user).then(function (folder) {
-     return getFilesInFolderForUser(user, folder).with(folder);
+homeFolderForUser(user).then(function (folder) {
+     return filesInFolder(user, folder).with(folder);
 }).thenWith(function (files, folder)){
      //...
 })
